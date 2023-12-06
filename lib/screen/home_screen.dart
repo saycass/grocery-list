@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_list/model/to_buy.dart';
+import 'package:grocery_list/widget/counter_item.dart';
 import 'package:grocery_list/widget/to_buy_item.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final toBuyList = ToBuy.toBuyList();
 
   @override
@@ -15,7 +21,7 @@ class HomeScreen extends StatelessWidget {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 searchBox(),
@@ -25,7 +31,7 @@ class HomeScreen extends StatelessWidget {
                       Container(
                         margin: const EdgeInsets.only(top: 50, bottom: 20),
                         child: const Text(
-                          "All to Buy",
+                          "Grocery List",
                           style: TextStyle(
                             color: Colors.purple,
                             fontSize: 30,
@@ -36,6 +42,8 @@ class HomeScreen extends StatelessWidget {
                       for (ToBuy tobuy in toBuyList)
                         ToBuyItem(
                           tobuy: tobuy,
+                          onToBuyChanged: _handleToBuyChange,
+                          onDeleteItem: () {},
                         ),
                     ],
                   ),
@@ -48,45 +56,64 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                    child: Container(
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      bottom: 20,
+                      right: 20,
+                      left: 20,
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 0.0),
+                          blurRadius: 10.0,
+                          spreadRadius: 0.0,
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const TextField(
+                      decoration: InputDecoration(
+                        hintText: "add a new grocery item",
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
                   margin: const EdgeInsets.only(
                     bottom: 20,
                     right: 20,
-                    left: 20,
                   ),
-                  padding: EdgeInsets.symmetric( horizontal: 20, vertical: 5),
-                  decoration:  BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        offset: Offset(0.0, 0.0),
-                        blurRadius: 10.0,
-                        spreadRadius: 0.0,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                      child: TextField (
-                        decoration: InputDecoration (
-                          hintText:  "add a new to buy item",
-                          border:  InputBorder.none,
-                        ),
-                      ),
-                ),
-                ),
-                IconButton(onPressed: () {},
-                    icon: Icon( Icons.add,
-                      color: Colors.purple,
-                      size: 20,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:  Colors.purple,
+                      minimumSize:  const Size (60,60),
+                      elevation: 0),
+                    child: const  Icon (
+                      Icons.add,
+                      color: Colors.white,
+                      size: 30,
                     ),
-                ),
+                  ),
+                )
               ],
             ),
           )
         ],
       ),
     );
+  }
+
+  void _handleToBuyChange (ToBuy tobuy) {
+    setState(() {
+      tobuy.isDone = !tobuy.isDone;
+    });
   }
 
   Container searchBox() {
@@ -131,7 +158,7 @@ class HomeScreen extends StatelessWidget {
           ),
           SizedBox(
             width: 40,
-            height: 48,
+            height: 40,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: const Image(
