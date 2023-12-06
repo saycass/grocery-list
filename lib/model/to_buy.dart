@@ -2,6 +2,7 @@ class ToBuy {
   String ? id;
   String ? toBuyText;
   late bool isDone;
+  int count = 0;
 
   ToBuy ({
     required this.id,
