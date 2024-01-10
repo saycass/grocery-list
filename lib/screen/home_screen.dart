@@ -12,6 +12,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final toBuyList = ToBuy.toBuyList();
+  List<ToBuy> _foundToBuy = [];
+  final _toBuyController = TextEditingController();
+
+  @override
+  void initState() {
+    _foundToBuy = toBuyList;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      for (ToBuy tobuy in toBuyList)
+                      for (ToBuy tobuy in _foundToBuy)
                         ToBuyItem(
                           tobuy: tobuy,
                           onToBuyChanged: _handleToBuyChange,
-                          onDeleteItem: () {},
+                          onDeleteItem: _deleteToBuyItem,
                         ),
                     ],
                   ),
@@ -76,8 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const TextField(
-                      decoration: InputDecoration(
+                    child: TextField(
+                      controller: _toBuyController,
+                      decoration: const InputDecoration(
                         hintText: "add a new grocery item",
                         border: InputBorder.none,
                       ),
@@ -90,12 +99,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     right: 20,
                   ),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _addToBuyItem(_toBuyController.text);
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:  Colors.purple,
-                      minimumSize:  const Size (60,60),
-                      elevation: 0),
-                    child: const  Icon (
+                        backgroundColor: Colors.purple,
+                        minimumSize: const Size(60, 60),
+                        elevation: 0),
+                    child: const Icon(
                       Icons.add,
                       color: Colors.white,
                       size: 30,
@@ -110,24 +121,57 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _handleToBuyChange (ToBuy tobuy) {
+  void _handleToBuyChange(ToBuy tobuy) {
     setState(() {
       tobuy.isDone = !tobuy.isDone;
+    });
+  }
+
+  void _deleteToBuyItem(String id) {
+    setState(() {
+      toBuyList.removeWhere((item) => item.id == id);
+    });
+  }
+
+  void _addToBuyItem(String toBuy) {
+    setState(() {
+      toBuyList.add(ToBuy(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          toBuyText: toBuy));
+    });
+    _toBuyController.clear();
+  }
+
+  void _runFilter(String enteredKeyword) {
+    List<ToBuy> results = [];
+    if (enteredKeyword.isEmpty) {
+      results = toBuyList;
+    } else {
+      results = toBuyList
+          .where((item) => item.toBuyText
+              .toLowerCase()
+              .contains(enteredKeyword.toLowerCase()))
+          .toList();
+    }
+
+    setState(() {
+      _foundToBuy = results;
     });
   }
 
   Container searchBox() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey,
+        color: Colors.purple,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const TextField(
+      child: TextField(
+          onChanged: (value) => _runFilter(value),
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(20),
           prefixIcon: Icon(
             Icons.search,
-            color: Colors.purple,
+            color: Colors.white,
             size: 20,
           ),
           // prefixIconConstraints: BoxConstraints(
@@ -137,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
           border: InputBorder.none,
           hintText: "Search",
           hintStyle: TextStyle(
-            color: Colors.purple,
+            color: Colors.white,
           ),
         ),
       ),

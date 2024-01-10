@@ -5,13 +5,12 @@ import '../model/to_buy.dart';
 import 'counter_item.dart';
 
 double _add = 0;
-double _remove = 0;
+
 
 class ToBuyItem extends StatefulWidget {
-
   final ToBuy tobuy;
   final void Function(ToBuy) onToBuyChanged;
-  final void Function() onDeleteItem;
+  final void Function(String) onDeleteItem;
 
   const ToBuyItem(
       {Key? key,
@@ -25,38 +24,21 @@ class ToBuyItem extends StatefulWidget {
 }
 
 class _ToBuyItemState extends State<ToBuyItem> {
-
-  int counting = 0;
-
-  void remove () {
-    setState(() {
-      counting ++;
-    });
-    if (kDebugMode) {
-      print(counting);
-    }
-  }
-
-  void add () {
-    setState(() {
-      counting ++;
-    });
-    if (kDebugMode) {
-      print (counting);
-    }
-  }
+  int count = 0;
 
   final toBuyList = ToBuy.toBuyList();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 40, top: 20),
       child: Dismissible(
-        key: Key(widget.tobuy.toBuyText!),
+        key: Key(widget.tobuy.toBuyText),
         onDismissed: (direction) {
           setState(() {
+            widget.onDeleteItem (widget.tobuy.id);
             toBuyList.remove(widget.tobuy);
+
           });
         },
         child: ExpansionTile(
@@ -64,8 +46,7 @@ class _ToBuyItemState extends State<ToBuyItem> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            contentPadding:
-                const EdgeInsets.symmetric( vertical: 5),
+            contentPadding: const EdgeInsets.symmetric(vertical: 5),
             tileColor: Colors.white,
             leading: IconButton(
               onPressed: () {
@@ -96,7 +77,7 @@ class _ToBuyItemState extends State<ToBuyItem> {
                 color: Colors.purple,
                 borderRadius: BorderRadius.circular(5),
               ),
-              child:  Align(
+              child: Align(
                 alignment: Alignment.center,
                 child: Text(
                   "$_add",
@@ -111,24 +92,28 @@ class _ToBuyItemState extends State<ToBuyItem> {
           children: <Widget>[
             ListTile(
               leading: IconButton(
-                icon: const Icon(Icons.add_circle,
+                icon: const Icon(
+                  Icons.add_circle,
                   color: Colors.purple,
                 ),
                 onPressed: () {
-                  setState(() {
-                    counting. toString();
-                    _add += 1;
-                  });
+                  widget.tobuy.add();
+                    setState(() {
+                      _add += 1;
+                      count. toString();
+                    });
                 },
               ),
               trailing: IconButton(
-                icon: const Icon(Icons.remove_circle,
+                icon: const Icon(
+                  Icons.remove_circle,
                   color: Colors.purple,
                 ),
                 onPressed: () {
+                  widget.tobuy.remove();
                   setState(() {
-                    counting. toString();
-                    _remove += 1;
+                    _add -= 1;
+                    count. toString();
                   });
                 },
               ),
