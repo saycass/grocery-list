@@ -1,6 +1,6 @@
 # grocery_list
 
-A new Flutter project.
+This app is a grocery list where you can add a item the you need to buy, the amount of this item, and select the item when you alredy boughtt.
 
 ## Getting Started
 
